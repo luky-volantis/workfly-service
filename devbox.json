@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.0/.schema/devbox.schema.json",
+  "packages": [
+    "go@latest",
+    "go-task@latest",
+    "air@latest",
+    "go-swag@latest",
+    "golangci-lint@latest"
+  ],
+  "env": {
+    "PORT": "8080",
+    "ENV": "development",
+    "POCKETBASE_DATA_DIR": "./pb_data",
+    "TEMPORAL_HOST_PORT": "localhost:7233"
+  },
+  "shell": {
+    "init_hook": [
+      "echo '🚀 Devbox environment loaded for Workfly API service!'"
+    ],
+    "scripts": {
+      "dev": "task dev",
+      "build": "task build",
+      "test": "task test",
+      "lint": "task lint",
+      "docs": "task docs"
+    }
+  }
+}

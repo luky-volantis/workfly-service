@@ -1,0 +1,69 @@
+version: '3'
+
+vars:
+  BINARY_NAME: workfly
+  DOCKER_IMAGE: workfly
+
+tasks:
+  default:
+    desc: Default target (builds application)
+    cmds:
+      - task: build
+
+  build:
+    desc: Build application binary
+    cmds:
+      - go build -o bin/{{.BINARY_NAME}} ./cmd/server/
+
+  run:
+    desc: Run the built application binary
+    deps: [docs]
+    cmds:
+      - ./bin/{{.BINARY_NAME}}
+
+  dev:
+    desc: Start development with live reloading
+    cmds:
+      - air -c .air.toml
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test -v ./...
+
+  docs:
+    desc: Generate OpenAPI 3.x documentation (JSON & YAML)
+    cmds:
+      - swag init -g main.go -d cmd/server,internal -o docs -ot json,yaml,go --parseInternal
+
+  docs-v3:
+    desc: Convert generated Swagger spec to standard OpenAPI 3.0 JSON using swagger2openapi
+    deps: [docs]
+    cmds:
+      - npx --yes swagger2openapi docs/swagger.json -o docs/openapi3.json
+
+  clean:
+    desc: Clean build output, temporary files, and generated docs
+    cmds:
+      - rm -rf bin/ tmp/ docs/
+
+  docker-build:
+    desc: Build Docker image
+    cmds:
+      - docker build -t {{.DOCKER_IMAGE}} .
+
+  docker-run:
+    desc: Run Docker container
+    cmds:
+      - docker run -p 8080:8080 {{.DOCKER_IMAGE}}
+
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run
+
+  generate-swagger:
+    desc: Format swagger comments and generate OpenAPI 3.x docs
+    cmds:
+      - swag fmt
+      - swag init -g main.go -d cmd/server,internal -o docs -ot json,yaml,go --parseInternal --v3.1
