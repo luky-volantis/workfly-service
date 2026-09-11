@@ -1,5 +1,6 @@
-pb_data
 tmp
 bin
 .devbox
 .env
+pb_data/**
+pb_data
